@@ -22,16 +22,33 @@ class LogIn(generics.GenericAPIView):
     # authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
 
+    demo_username = "demo_user1"
+
     def post(self, request):
-        user = get_object_or_404(User, username=request.data['username'])
+        is_demo = request.data['isDemo']
 
-        if not user.check_password(request.data['password']):
-            return Response({"detail":"Not Found"}, status=status.HTTP_404_NOT_FOUND)
+        try:
+            if is_demo:
+                user = get_object_or_404(User, username=self.demo_username)
+            else:
+                user = get_object_or_404(User, username=request.data['username'])
 
-        token, created = Token.objects.get_or_create(user=user)
-        serializer = UserSerializer(instance=user)
+            if not is_demo and not user.check_password(request.data['password']):
+                return Response(
+                    {"detail":"User Not Found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
 
-        return Response({"token":token.key, "user":serializer.data})
+            token, created = Token.objects.get_or_create(user=user)
+            serializer = UserSerializer(instance=user)
+
+            return Response({"token":token.key, "user":serializer.data})
+        
+        except Exception:
+            return Response(
+                {"message":"Error in Log In"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class SignUp(generics.GenericAPIView):
     serializer_class = UserSerializer
@@ -99,7 +116,7 @@ class Weather(generics.GenericAPIView):
 
         user_id = Token.objects.get(key=request.auth.key).user_id
         settingData = self.get_setting(user_id)
-        print(user_id, settingData)
+        
         try:
             url = weather_url + "?key=" + weather_api_key + "&q=" + settingData.city + "&aqi=no&alerts=no&days=8"
             response = requests.get(url)
