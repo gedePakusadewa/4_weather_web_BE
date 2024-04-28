@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-_s-v^!ii97jg6q*p+@y*i&-b$9mqah2(z24&!u$)t3lshat)20'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-# ALLOWED_HOSTS = ["gdsadewa.com", "www.gdsadewa.com", "http://gdsadewa.com"]
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["gdsadewa.com", "www.gdsadewa.com", "http://gdsadewa.com"]
+# ALLOWED_HOSTS = []
 
 
 
